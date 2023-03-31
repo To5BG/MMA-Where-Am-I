@@ -8,5 +8,5 @@ import os
 store = create_db.read_pickle()
 print("Done. Read %d entries." % len(store))
 
-print(cluster_model.fit(list(store.items())[0:10]))
+print(cluster_model.fit(list(store.values())[0:10]))
             
