@@ -15,17 +15,21 @@ def fit(data):
     for _, v in data:
         if v["landmark"] not in classes:
             classes.append(v["landmark"])
-        model.fit([v["sift"].flatten()], [classes.index(v["landmark"])])
+        for d in range(v["sift"].shape[0]):
+            model.fit([v["sift"][d]], [classes.index(v["landmark"])])
         entries.append(v)
     entries = np.array(entries)
     
 def predict(entry):
     global entries, classes, model
-    prediction = model.predict(entry["sift"])
-    dist, idx = model.kneighbors(entry["sift"])
-
-    weights = 1 / (np.array(dist) * np.sum(dist))
-    near_geo = np.array(list(map(lambda i: \
-            [entries[i]["gps_latitude"], entries[i]["gps_longitude"], entries[i]["gps_altitude"]], idx)))
-    return prediction, np.dot(weights, near_geo)
+    w = []
+    geo = []
+    for d in range(entry[1]["sift"].shape[0]):
+        prediction = model.predict(entry[1]["sift"][d])
+        dist, idx = model.kneighbors(entry[1]["sift"][d])
+        weights = 1 / (np.array(dist) * np.sum(dist))
+        w.append(prediction)
+        geo.append(np.dot(weights, np.array(list(map(lambda i: \
+            [entries[i]["gps_latitude"], entries[i]["gps_longitude"], entries[i]["gps_altitude"]], idx)))))
+    return w, geo
     
