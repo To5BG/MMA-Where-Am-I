@@ -5,7 +5,7 @@ from exif import Image
 def sift_features(image, keypoints=10):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     sift = cv2.SIFT_create(nfeatures=keypoints)
-    kp, des = sift.detectAndCompute(image, None)
+    _, des = sift.detectAndCompute(image, None)
     return des
 
 def color_hist(im, num_bins=256):
