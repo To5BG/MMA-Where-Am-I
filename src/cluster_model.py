@@ -16,7 +16,7 @@ def reset_models(knn_n=5, kmeans_n=40):
 def fit(data):
     sifts = list(map(lambda e: e["sift"], data))
     labels = list(map(lambda e: e["landmark"], data))
-    geolocations = list(map(lambda e: [e.get("gps_latitude", 0), e.get("gps_longitude", 0), e.get("gps_altitude", 0)], data))
+    geolocations = list(map(lambda e: np.concatenate((e["gps_latitude"], e["gps_longitude"], [e["gps_altitude"]])), data))
     fit_features(np.vstack(sifts))
     w = predict_features(np.array(sifts))
     fit_vector(w, labels, geolocations)

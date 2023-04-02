@@ -1,12 +1,19 @@
 import cv2
 import numpy as np
 from exif import Image
+from config import config
 
 def sift_features(image, keypoints=10):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    #resize image to resize_width
+    ratio = config.resize_width / image.shape[1]
+    dim = (int(image.shape[0] * ratio), config.resize_width)
+    image = cv2.resize(image, dim, interpolation = cv2.INTER_AREA)
+
     sift = cv2.SIFT_create(nfeatures=keypoints)
     _, des = sift.detectAndCompute(image, None)
-    return des
+    return des[:keypoints, :]
 
 def color_hist(im, num_bins=256):
     counts = np.zeros((num_bins, 3))
@@ -29,5 +36,6 @@ def get_geo_metadata(path):
         img = Image(img_file)
         attrs = ['gps_latitude', 'gps_longitude', 'gps_altitude']
         if img.has_exif and all(hasattr(img, s) for s in attrs): 
-            return { "gps_latitude": img.gps_latitude, "gps_longitude": img.gps_longitude, "gps_altitude": img.gps_altitude }
-        else: return {}
+            return {"gps_latitude": img.gps_latitude, "gps_longitude": img.gps_longitude, "gps_altitude": img.gps_altitude }
+        else:
+            return {"gps_latitude": [-1, -1, -1], "gps_longitude": [-1, -1, -1], "gps_altitude": -1}
