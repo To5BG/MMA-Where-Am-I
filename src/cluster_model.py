@@ -43,9 +43,11 @@ def predict(entry):
 
 def predict_features(data):
     global kmeans_model
-    w = []
+    w = np.zeros((len(data), kmeans_model.n_clusters))
     for d in range(len(data)):
-        w.append(kmeans_model.predict(data[d]))
+        visual_words = kmeans_model.predict(data[d])
+        for v in visual_words:
+            w[d, v] += 1
     return w
 
 def predict_vector(vector):
