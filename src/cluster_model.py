@@ -1,14 +1,15 @@
 from sklearn.neighbors import KNeighborsClassifier as knn
 from sklearn.cluster import KMeans as kmeans 
 import numpy as np
+from config import config
 
-kmeans_model = kmeans(n_clusters=40)
-knn_model = knn(n_neighbors=5, weights='distance')
+kmeans_model = kmeans(n_clusters=config.visual_words)
+knn_model = knn(n_neighbors=config.kneighbours, weights='distance')
 
 classes = []
 entries = []
 
-def reset_models(knn_n=5, kmeans_n=40):
+def reset_models(knn_n=config.kneighbours, kmeans_n=config.visual_words):
     global knn_model, kmeans_model
     knn_model = knn(n_neighbors=knn_n, weights='distance')
     kmeans_model = kmeans(n_clusters=kmeans_n)
