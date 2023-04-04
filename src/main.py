@@ -1,12 +1,21 @@
-import cv2
 import create_db
-import cluster_model
-from exif import Image
-import os
+import validation
+import argparse
 
-create_db.create_pickle("../data")
-store = create_db.read_pickle("../data")
-print("Done. Read %d entries." % len(store))
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--stage', type=str, default='test')
+    parser.add_argument('--path', type=str, default='../data/store.p')
+    args = parser.parse_args()
+    return args
 
-#print(cluster_model.fit(list(store.values())[0:10]))
-            
+args = get_args()
+stage = args.stage
+if stage == "generate":
+    create_db.create_pickle("../data")
+    store = create_db.read_pickle("../data")
+    print("Done. Read %d entries." % len(store))
+elif stage == "test":
+    validation.validate_videos()
+elif stage == "predict":
+    pass

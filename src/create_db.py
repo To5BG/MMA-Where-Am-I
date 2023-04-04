@@ -3,7 +3,6 @@ import os
 import feature_extraction
 from config import config
 
-
 def walk_folder(path, store):
     for root, dirs, files in os.walk(path):
         root = root.replace("\\", "/")
@@ -16,7 +15,6 @@ def walk_folder(path, store):
                     "tag": file.split("_")[-1].split(".")[0],
                 } | feature_extraction.get_geo_metadata(root + "/" + file)
 
-
 def create_pickle(destination, feature="sift"):
     store = {}
     walk_folder(config.root_data, store)
@@ -25,7 +23,6 @@ def create_pickle(destination, feature="sift"):
     store_file = open(destination + "/store.p", "wb")
     pickle.dump(store, store_file)
     store_file.close()
-
 
 def read_pickle(destination):
     store_file = open(destination + "/store.p", "rb")

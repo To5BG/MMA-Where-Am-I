@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-
 @dataclass
 class Config:
     """Config"""
@@ -11,6 +10,4 @@ class Config:
     kneighbours: int = 7
     video_sample_rate: int = 10
 
-
 config = Config()
-

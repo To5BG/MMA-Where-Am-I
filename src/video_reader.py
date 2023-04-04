@@ -2,7 +2,6 @@ from os import walk
 import cv2
 from config import config
 
-
 def get_frames(video_path, freq=1):
     frames = []
     vidcap = cv2.VideoCapture(video_path)
@@ -15,9 +14,9 @@ def get_frames(video_path, freq=1):
         count += 1
     return frames
 
-def read_videos():
+def read_videos(file_path=config.video_path):
     frames = {}
-    for dirpath, dirnames, filenames in walk(config.video_path):
+    for dirpath, _, filenames in walk(file_path):
         dirpath = dirpath.replace("\\", "/")
         for (i, filename) in enumerate(filenames):
             frames[i] = get_frames(dirpath + "/" + filename, config.video_sample_rate)

@@ -1,9 +1,8 @@
-from create_db import create_pickle, read_pickle
+from create_db import read_pickle
 import numpy as np
 import cluster_model
 from video_reader import read_videos
 import feature_extraction
-
 
 def validate(train_test_ratio):
     store = read_pickle("../data")
@@ -24,7 +23,6 @@ def validate(train_test_ratio):
         if e[1]["landmark"] == cluster_model.predict(e)[0]:
             acc += 1
     print("Accuracy: %f" % (acc / len(test_data)))
-
 
 def validate_videos():
     store = read_pickle("../data")
@@ -53,9 +51,4 @@ def validate_videos():
             result[video][landmark] += 1 / len(frames[video])
         print("Video index: %s" % video)
         print(result[video])
-
-
-if __name__ == "__main__":
-    # create_pickle("../data")
-    #validate(0.7)
-    validate_videos()
+        
