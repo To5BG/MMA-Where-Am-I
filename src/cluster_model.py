@@ -7,6 +7,7 @@ kmeans_model = kmeans(n_clusters=config.visual_words)
 knn_model = knn(n_neighbors=config.kneighbours, weights='distance')
 
 classes = []
+avg_geo_loc = [52, 0, 28, 4, 21, 23, 3]
 entries = []
 
 def reset_models(knn_n=config.kneighbours, kmeans_n=config.visual_words):
@@ -35,6 +36,9 @@ def fit_vector(vectors, labels, geos):
         indices.append(classes.index(l))
     classes = np.array(classes)
     knn_model = knn_model.fit(vectors, indices)
+    for g in geos:
+        for i in range(len(g)):
+            if g[i] == -1: g[i] = avg_geo_loc[i]
     if len(entries) == 0: entries = np.array(geos)
     else: entries = np.concatenate((entries, geos))
 

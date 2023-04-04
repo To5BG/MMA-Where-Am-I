@@ -4,6 +4,8 @@ import cluster_model
 from video_reader import read_videos
 import feature_extraction
 
+avg_geo_loc = [52, 0, 28, 4, 21, 23, 3]
+
 def validate(train_test_ratio):
     store = read_pickle("../data")
     train_data = {}
@@ -18,11 +20,21 @@ def validate(train_test_ratio):
     cluster_model.reset_models()
     cluster_model.fit(list(train_data.values()))
 
-    acc = 0
+    landmark_acc = 0
+    geoloc_mse = []
     for e in test_data.items():
-        if e[1]["landmark"] == cluster_model.predict(e)[0]:
-            acc += 1
-    print("Accuracy: %f" % (acc / len(test_data)))
+        pred_landmark, pred_geo = cluster_model.predict(e)
+        if e[1]["landmark"] == pred_landmark: landmark_acc += 1
+        
+        ggeo = np.concatenate((e[1]["gps_latitude"], e[1]["gps_longitude"], [e[1]["gps_altitude"]]))
+        for i in range(len(ggeo)):
+            if ggeo[i] == -1: ggeo[i] = avg_geo_loc[i]
+        
+        geoloc_mse.append(np.mean(np.square(pred_geo - ggeo) * [3600, 60, 1, 3600, 60, 1, 1]))
+
+    print(np.array(geoloc_mse).shape)
+    print("Geolocation weighted MSE (in seconds): %f" % np.mean(geoloc_mse))
+    print("Landmark accuracy: %f" % (landmark_acc / len(test_data)))
 
 def predict_videos(file_path):
     store = read_pickle("../data")
@@ -33,6 +45,7 @@ def predict_videos(file_path):
     frames = read_videos(file_path)
 
     result = {}
+    geo = {}
     for name, video in frames.items():
         result[name] = {
             "oj": 0,
@@ -40,15 +53,19 @@ def predict_videos(file_path):
             "rh": 0,
             "xx": 0
         }
+        geo[name] = []
         for frame in video:
             ft = (video, {"sift": feature_extraction.sift_features(frame)})
-            landmark = cluster_model.predict(ft)[0][0]
+            landmark, geo_loc = cluster_model.predict(ft)
+            landmark = landmark[0]
 
             # for some reason landmark gives a key error in some instances
             if landmark not in result[name]:
                 landmark = "xx"
-
+            else:
+                geo[name].append(geo_loc[0])
             result[name][landmark] += 1 / len(video)
         print("Video name: %s" % name)
+        print("Geolocation: %s" % np.mean(geo[name], axis=0))
         print(result[name])
         

@@ -35,7 +35,8 @@ def get_geo_metadata(path):
     with open(path, 'rb') as img_file:
         img = Image(img_file)
         attrs = ['gps_latitude', 'gps_longitude', 'gps_altitude']
-        if img.has_exif and all(hasattr(img, s) for s in attrs): 
-            return {"gps_latitude": img.gps_latitude, "gps_longitude": img.gps_longitude, "gps_altitude": img.gps_altitude }
-        else:
-            return {"gps_latitude": [-1, -1, -1], "gps_longitude": [-1, -1, -1], "gps_altitude": -1}
+        if not img.has_exif: return {"gps_latitude": [-1, -1, -1], "gps_longitude": [-1, -1, -1], "gps_altitude": -1}
+        geo = {}
+        for s, defo in zip(attrs, [[-1, -1, -1], [-1, -1, -1], -1]): 
+            geo[s] = getattr(img, s) if hasattr(s, img) else defo
+        return geo 

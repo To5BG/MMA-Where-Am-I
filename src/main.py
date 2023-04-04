@@ -11,11 +11,14 @@ def get_args():
 
 args = get_args()
 stage = args.stage
+if stage == "debug":
+    store = create_db.read_pickle("../data")
+    print(store.values())
 if stage == "generate":
     create_db.create_pickle("../data")
     store = create_db.read_pickle("../data")
     print("Done. Read %d entries." % len(store))
 elif stage == "test":
-    validation.validate()
+    validation.validate(0.7)
 elif stage == "predict":
     validation.predict_videos(args.path)
