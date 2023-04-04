@@ -24,31 +24,31 @@ def validate(train_test_ratio):
             acc += 1
     print("Accuracy: %f" % (acc / len(test_data)))
 
-def validate_videos():
+def predict_videos(file_path):
     store = read_pickle("../data")
     cluster_model.reset_models()
     cluster_model.fit(
         list(filter(lambda e: True if e["landmark"] != "xx" else np.random.random() < 0.1,
                     store.values())))  # reduce the number of xx samples
-    frames = read_videos()
+    frames = read_videos(file_path)
 
     result = {}
-    for video in frames:
-        result[video] = {
+    for name, video in frames.items():
+        result[name] = {
             "oj": 0,
             "nk": 0,
             "rh": 0,
             "xx": 0
         }
-        for frame in frames[video]:
+        for frame in video:
             ft = (video, {"sift": feature_extraction.sift_features(frame)})
             landmark = cluster_model.predict(ft)[0][0]
 
             # for some reason landmark gives a key error in some instances
-            if landmark not in result[video]:
+            if landmark not in result[name]:
                 landmark = "xx"
 
-            result[video][landmark] += 1 / len(frames[video])
-        print("Video index: %s" % video)
-        print(result[video])
+            result[name][landmark] += 1 / len(video)
+        print("Video name: %s" % name)
+        print(result[name])
         

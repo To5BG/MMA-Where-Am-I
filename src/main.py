@@ -4,8 +4,8 @@ import argparse
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--stage', type=str, default='test')
-    parser.add_argument('--path', type=str, default='../data/store.p')
+    parser.add_argument('--stage', type=str, default='predict')
+    parser.add_argument('--path', type=str, default='../data/imagefolders/test_videos')
     args = parser.parse_args()
     return args
 
@@ -16,6 +16,6 @@ if stage == "generate":
     store = create_db.read_pickle("../data")
     print("Done. Read %d entries." % len(store))
 elif stage == "test":
-    validation.validate_videos()
+    validation.validate()
 elif stage == "predict":
-    pass
+    validation.predict_videos(args.path)
