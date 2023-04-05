@@ -59,6 +59,8 @@ def predict_vector(vector):
     global knn_model, entries, classes
     prediction = classes[knn_model.predict(vector)]
     dist, idx = knn_model.kneighbors(vector)
+
+    #print(entries[idx])
     weights = 1 / (1e-10 + dist)
     weights /= np.sum(weights, axis=-1)
     geo = []

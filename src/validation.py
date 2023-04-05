@@ -40,7 +40,7 @@ def predict_videos(file_path):
     store = read_pickle("../data")
     cluster_model.reset_models()
     cluster_model.fit(
-        list(filter(lambda e: True if e["landmark"] != "xx" else np.random.random() < 0.1,
+        list(filter(lambda e: True if e["landmark"] != "xx" else np.random.random() < 0.25,
                     store.values())))  # reduce the number of xx samples
     frames = read_videos(file_path)
 
@@ -62,8 +62,8 @@ def predict_videos(file_path):
             # for some reason landmark gives a key error in some instances
             if landmark not in result[name]:
                 landmark = "xx"
-            else:
-                geo[name].append(geo_loc[0])
+            
+            geo[name].append(geo_loc[0])
             result[name][landmark] += 1 / len(video)
         print("Video name: %s" % name)
         print("Geolocation: %s" % np.mean(geo[name], axis=0))
